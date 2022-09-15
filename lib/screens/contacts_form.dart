@@ -19,7 +19,7 @@ class _ContactsFormState extends State<ContactsForm> {
     final int? account = int.tryParse(_controllerContactAccount.text);
 
     if (account != null) {
-      final contactCreated = Contact(name, account);
+      final contactCreated = Contact(0, name, account);
       Navigator.pop(context, contactCreated);
     }
   }
