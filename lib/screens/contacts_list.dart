@@ -1,3 +1,5 @@
+import 'package:byte_bank/components/loading.dart';
+import 'package:byte_bank/database/app_database.dart';
 import 'package:byte_bank/models/contact.dart';
 import 'package:byte_bank/screens/contacts_form.dart';
 import 'package:flutter/material.dart';
@@ -22,28 +24,13 @@ class ContactsItem extends StatelessWidget {
   }
 }
 
-class ContactsList extends StatefulWidget {
-  final List<Contact> _contacts = [];
-
-  ContactsList({Key? key}) : super(key: key);
-
-  @override
-  State<ContactsList> createState() => _ContactsListState();
-}
-
-class _ContactsListState extends State<ContactsList> {
-  void _addNewContact(Contact? contact) {
-    if (contact != null) {
-      setState(() {
-        widget._contacts.add(contact);
-      });
-    }
-  }
+class ContactsList extends StatelessWidget {
+  const ContactsList({Key? key}) : super(key: key);
 
   void _navigateContactsFormScreen(BuildContext context) {
     Navigator.push<Contact>(context, MaterialPageRoute(builder: (context) {
       return const ContactsForm();
-    })).then((contact) => _addNewContact(contact));
+    }));
   }
 
   @override
@@ -54,12 +41,30 @@ class _ContactsListState extends State<ContactsList> {
         title: const Text('Contatos'),
         backgroundColor: Theme.of(context).primaryColor,
       ),
-      body: ListView.builder(
-        itemCount: widget._contacts.length,
-        itemBuilder: (context, index) {
-          final contact = widget._contacts[index];
-          return ContactsItem(contact: contact);
-        },
+      body: FutureBuilder<List<Contact>>(
+        initialData: const [],
+        future: findAll(),
+        builder: ((context, snapshot) {
+          switch (snapshot.connectionState) {
+            case ConnectionState.none:
+              break;
+            case ConnectionState.waiting:
+              return const Loading();
+            case ConnectionState.active:
+              break;
+            case ConnectionState.done:
+              final List<Contact> contacts = snapshot.data!;
+              return ListView.builder(
+                itemCount: contacts.length,
+                itemBuilder: (context, index) {
+                  final contact = contacts[index];
+                  return ContactsItem(contact: contact);
+                },
+              );
+          }
+
+          return const Text("Erro ao carregar dados!");
+        }),
       ),
       floatingActionButton: FloatingActionButton(
         child: const Icon(Icons.add),
