@@ -1,5 +1,5 @@
 import 'package:byte_bank/components/loading.dart';
-import 'package:byte_bank/database/app_database.dart';
+import 'package:byte_bank/database/dao/contact_dao.dart';
 import 'package:byte_bank/models/contact.dart';
 import 'package:byte_bank/screens/contacts_form.dart';
 import 'package:flutter/material.dart';
@@ -24,13 +24,24 @@ class ContactsItem extends StatelessWidget {
   }
 }
 
-class ContactsList extends StatelessWidget {
+class ContactsList extends StatefulWidget {
   const ContactsList({Key? key}) : super(key: key);
 
+  @override
+  State<ContactsList> createState() => _ContactsListState();
+}
+
+class _ContactsListState extends State<ContactsList> {
+  final ContactDao _dao = ContactDao();
+
   void _navigateContactsFormScreen(BuildContext context) {
-    Navigator.push<Contact>(context, MaterialPageRoute(builder: (context) {
-      return const ContactsForm();
-    }));
+    Navigator.of(context)
+        .push(
+          MaterialPageRoute(
+            builder: (context) => const ContactsForm(),
+          ),
+        )
+        .then((value) => setState(() {}));
   }
 
   @override
@@ -43,7 +54,7 @@ class ContactsList extends StatelessWidget {
       ),
       body: FutureBuilder<List<Contact>>(
         initialData: const [],
-        future: findAll(),
+        future: _dao.findAll(),
         builder: ((context, snapshot) {
           switch (snapshot.connectionState) {
             case ConnectionState.none:

@@ -1,4 +1,5 @@
 import 'package:byte_bank/components/input.dart';
+import 'package:byte_bank/database/dao/contact_dao.dart';
 import 'package:byte_bank/models/contact.dart';
 import 'package:flutter/material.dart';
 
@@ -13,6 +14,7 @@ class _ContactsFormState extends State<ContactsForm> {
   final TextEditingController _controllerContactName = TextEditingController();
   final TextEditingController _controllerContactAccount =
       TextEditingController();
+  final ContactDao _dao = ContactDao();
 
   void _createContact(BuildContext context) {
     final String name = _controllerContactName.text;
@@ -20,7 +22,7 @@ class _ContactsFormState extends State<ContactsForm> {
 
     if (account != null) {
       final contactCreated = Contact(0, name, account);
-      Navigator.pop(context, contactCreated);
+      _dao.save(contactCreated).then((id) => Navigator.pop(context));
     }
   }
 

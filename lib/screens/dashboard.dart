@@ -7,7 +7,7 @@ class Dashboard extends StatelessWidget {
   void _navigateContactsList(BuildContext context) {
     Navigator.of(context).push(
       MaterialPageRoute(
-        builder: (context) => ContactsList(),
+        builder: (context) => const ContactsList(),
       ),
     );
   }
